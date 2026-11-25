@@ -111,7 +111,7 @@ print(train['text'].duplicated().sum())
 print(train['model'].value_counts())
 
 # making model to ready to realize X and y
-x=train.drop(columns=['id','prompt_id','text','model'])
+x=train.drop(columns=['id','prompt_id','text','model']) #it has[row0,row1,row2]
 y=train['model']
 print(x.shape)
 print(y.shape)
@@ -125,3 +125,15 @@ print(train['prompt_id'].value_counts().head(100))
 
 from sklearn.model_selection import GroupShuffleSplit
 group_splitter=GroupShuffleSplit(n_splits=1,test_size=0.20,random_state=42)
+split_result=group_splitter.split(x,y,groups=train['prompt_id'])
+train_idx,valid_idx=next(split_result) #train_dx=[0,2] valid[1,3]
+print(len(train_idx))
+print(len(valid_idx))
+x_train=x.iloc[train_idx]#row0,row2
+x_val=x.iloc[valid_idx]#row1,row3
+y_train = y.iloc[train_idx]
+y_val = y.iloc[valid_idx]
+print(x_train.shape)
+print(x_val.shape)
+print(y_train.shape)
+print(y_val.shape)
