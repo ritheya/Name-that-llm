@@ -137,3 +137,27 @@ print(x_train.shape)
 print(x_val.shape)
 print(y_train.shape)
 print(y_val.shape)
+# to check prompt leak
+train_group=train['prompt_id'].iloc[train_idx]
+val_group=train['prompt_id'].iloc[valid_idx]
+print(set(train_group) & set(val_group))
+from sklearn.impute import SimpleImputer
+imputer=SimpleImputer(strategy='median')
+imputer.fit(x_train)
+print(imputer.statistics_)
+x_train_imputed=imputer.transform(x_train)
+x_val_imputed = imputer.transform(x_val)
+import numpy as np
+print(np.isnan(x_train_imputed).sum())
+print(np.isnan(x_val_imputed).sum())
+from sklearn.preprocessing import StandardScaler
+scaler=StandardScaler()
+# LEARN SCALE
+scaler.fit(x_train_imputed) #SCALER= Z=(X-MEAN)/sd
+print(scaler.mean_) #MEAN
+print(scaler.scale_)#SIGMA(SD)
+# TRANSFORM
+x_train_scaled=scaler.transform(x_train_imputed)
+x_val_scaled = scaler.transform(x_val_imputed)
+print(x_train_scaled.shape)
+print(x_val_scaled.shape)
